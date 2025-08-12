@@ -27,7 +27,11 @@ Generate 5 Singapore customers:
 python src/generate_customers.py   --schema schema/customer.schema.json   --constraints config/example_constraints.json   --count 5   --out customers.jsonl   --seed 42
 ```
 
-Output is a **JSON Lines** file (`.jsonl`), one customer per line.
+```
+python src/render_nric.py   --input customers.jsonl   --nric-config config/nric_fields.json   --templates-root .   --doc-out docs_out
+
+
+Output is a **JSON Lines** file (`.jsonl`), one customer per line. 
 
 ## Constraints
 You can control generation using a JSON constraints file. Example (already included):

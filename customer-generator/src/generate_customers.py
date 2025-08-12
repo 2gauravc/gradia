@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-
 from faker import Faker
 from jsonschema import Draft202012Validator
 
@@ -89,77 +88,6 @@ def compute_income(emp_type: str,
         monthly = max(0.0, monthly)
     annual = round(monthly * 12 * (1 + random.uniform(-0.05, 0.05)), 2)  # ±5%
     return monthly, annual
-
-def _resolve_pointer(doc: Dict[str, Any], pointer: str) -> Any:
-    """
-    Resolve a very small subset of JSON Pointer: /a/b/c
-    """
-    if not pointer or pointer[0] != "/":
-        raise ValueError(f"Invalid JSON pointer: {pointer}")
-    cur = doc
-    for part in pointer.strip("/").split("/"):
-        if isinstance(cur, dict) and part in cur:
-            cur = cur[part]
-        else:
-            raise KeyError(f"Path not found: {pointer}")
-    return cur
-
-def _apply_format(value: Any, fmt: Optional[str]) -> Any:
-    if not fmt or not isinstance(value, str):
-        return value
-    if fmt.startswith("date:"):
-        try:
-            # value expected ISO date (YYYY-MM-DD)
-            dt = datetime.fromisoformat(value)
-            return dt.strftime(fmt.split("date:", 1)[1].strip())
-        except Exception:
-            return value
-    return value
-
-def _compute_func(name: str) -> Any:
-    if name == "today":
-        return datetime.today().date().isoformat()
-    raise ValueError(f"Unknown func: {name}")
-
-def render_nric_html(customer: Dict[str, Any],
-                     cfg_path: Path,
-                     templates_root: Optional[Path],
-                     out_dir: Path) -> Path:
-    cfg = load_json(cfg_path)
-    template_rel = cfg["template"]
-    output_pattern = cfg.get("output_pattern", "nric_{customer_id}.html")
-    fields_decl: List[Dict[str, Any]] = cfg["fields"]
-
-    # Build data context for template from field declarations
-    fields: Dict[str, Any] = {}
-    for fld in fields_decl:
-        key = fld["key"]
-        source = fld.get("source")
-        fmt = fld.get("format")
-
-        if source.startswith("/"):  # JSON pointer
-            val = _resolve_pointer(customer, source)
-        elif source.startswith("func:"):
-            val = _compute_func(source.split("func:", 1)[1])
-        else:
-            raise ValueError(f"Unsupported source: {source}")
-
-        fields[key] = _apply_format(val, fmt)
-
-    # Jinja2 env
-    if templates_root is None:
-        templates_root = Path(".")
-    env = Environment(
-        loader=FileSystemLoader(str(templates_root)),
-        autoescape=select_autoescape(["html", "xml"])
-    )
-    template = env.get_template(template_rel)
-    html = template.render(fields=fields, customer=customer)
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / output_pattern.format(customer_id=customer["customer_id"])
-    out_path.write_text(html, encoding="utf-8")
-    return out_path
 
 
 # -------- Core generator --------
@@ -279,9 +207,6 @@ def main():
     ap.add_argument("--constraints", type=Path, help="Path to constraints JSON")
     ap.add_argument("--out", type=Path, default=Path("customers.jsonl"), help="Output JSONL file")
     ap.add_argument("--seed", type=int, default=None, help="Random seed")
-    ap.add_argument("--nric-config", type=Path, help="Path to NRIC field-declaration JSON (e.g., config/nric_fields.json)")
-    ap.add_argument("--templates-root", type=Path, default=Path("."), help="Root folder for HTML templates")
-    ap.add_argument("--doc-out", type=Path, default=Path("docs_out"), help="Output folder for rendered documents")
 
     args = ap.parse_args()
 
@@ -296,19 +221,6 @@ def main():
         for _ in range(args.count):
             record = gen_customer(schema, constraints)
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
-
-            # Render NRIC HTML if config is provided
-            if args.nric_config:
-                try:
-                    render_nric_html(
-                        customer=record,
-                        cfg_path=args.nric_config,
-                        templates_root=args.templates_root,
-                        out_dir=args.doc_out,
-                    )
-                except Exception as e:
-                    # Do not abort batch; log and continue
-                    print(f"[warn] Failed to render NRIC for {record['customer_id']}: {e}")
 
     print(f"Wrote {args.count} customers to {args.out}")
 
