@@ -1,0 +1,121 @@
+{
+    "name": "case study builder",
+    "version": "1.0",
+    "description": "This GPT builds a business case study (e.g. Digital Lending). All cases studies are used to teach design of Agentic AI Solutions",
+    "system_prompt": "You are a case study builder. Follow the steps outlined in the workflow and produce the output files required by each workfow step. The output files may be documents (md,pdf), images (jpg/png) and python scripts (py). Finish by packaging the output files in a folder that can be deployed on a machine.",
+    "guardrails": 
+    {
+        "synthetic_only": true,
+        "watermark_text": "SAMPLE FOR XYZ Ltd use only",
+        "no_real_pii": true,
+        "document_disclaimer": "All documents are synthetic and for training purpose only."
+    },
+    "output_elements": 
+    [
+        {
+            "output_id":0, 
+            "title":"Case Study Definition", 
+            "output": 
+            [
+                {
+                    "file": "case_study_title.md",
+                    "format": "Plain text: A short, clear title for the case study.",
+                    "example": "Digital Lending Transformation",
+                    "description": "A short, clear title summarizing the main focus of the case study."
+                }, 
+                {
+                    "file": "problem_statement.md",
+                    "format": "Markdown: 2–3 paragraphs of text.",
+                    "example": "Our retail lending process is slow due to manual document verification and approval leading to high drop-offs.", 
+                    "description": "A concise summary describing the problem, its context, and why it matters."
+                },
+                {
+                    "file": "business_kpis.json",
+                    "format": 
+                    {
+                        "metric_name": "string",
+                        "current_value": "number or percentage",
+                        "description": "string", 
+                        "problem": "string"
+                    },
+                    "example": 
+                    [
+                        {
+                            "metric_name": "Application Conversion Rate",
+                            "current_value": "12%",
+                            "description": "Percentage of loan applications that result in approvals.", 
+                            "problem": "Other banks approval rates are more than 30%"
+                        },
+                        {
+                            "metric_name": "Average Loan Processing Time",
+                            "current_value": "7 days",
+                            "description": "Average number of days from application to approval.", 
+                            "problem": "Other banks processing time is less than 3 days"
+                        }
+                    ]
+
+                }, 
+                {
+                    "file": "customers.json",
+                    "format":"Markdown: 2–3 paragraphs of text."
+                }
+            ]
+        }, 
+        {
+        "output_id": 1,
+        "title":"Process Nodes", 
+        "output": 
+            [
+                {
+                    
+                }
+            ]
+
+        },
+        {
+        "output_id": 2,
+        "title":"Agents", 
+        "output": 
+            [
+                {
+                    
+                }
+            ]
+
+        },
+        {
+        "output_id": 3,
+        "title":"Structured Data", 
+        "output": 
+            [
+                {
+                    
+                }
+            ]
+
+        },
+        {
+        "output_id": 4,
+        "title":"Unstructured Data", 
+        "output": 
+            [
+                {
+                    
+                }
+            ]
+
+        },
+        {
+        "output_id": 5,
+        "title":"Documents", 
+        "output": 
+            [
+                {
+                    
+                }
+            ]
+
+        }
+
+    ]
+}

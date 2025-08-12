@@ -1,0 +1,12 @@
+{
+  "template": "templates/nric.html",
+  "output_pattern": "nric_{customer_id}.html",
+  "fields": [
+    { "key": "name", "label": "Name", "source": "/personal_details/name" },
+    { "key": "nric_number", "label": "NRIC No.", "source": "/id_documents/nric/nric_number" },
+    { "key": "nationality", "label": "Nationality", "source": "/personal_details/nationality" },
+    { "key": "address", "label": "Address", "source": "/personal_details/address" },
+    { "key": "date_of_birth", "label": "Date of Birth", "source": "/personal_details/date_of_birth", "format": "date:%d %b %Y" },
+    { "key": "issue_date", "label": "Issue Date", "source": "func:today", "format": "date:%d %b %Y" }
+  ]
+}

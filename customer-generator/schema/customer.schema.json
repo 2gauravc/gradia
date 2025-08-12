@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Customer",
+  "type": "object",
+  "$defs": {
+    "commonIdentity": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full legal name" },
+        "nationality": { "type": "string" },
+        "date_of_birth": { "type": "string", "format": "date" },
+        "address": { "type": "string" }
+      },
+      "required": ["name", "nationality"]
+    },
+    "nric": {
+      "type": "object",
+      "properties": {
+        "nric_number": { "type": "string" },
+        "nationality": { "type": "string" },
+        "address": { "type": "string" }
+      },
+      "required": ["nric_number", "nationality"]
+    },
+    "passport": {
+      "type": "object",
+      "properties": {
+        "passport_number": { "type": "string" },
+        "nationality": { "type": "string" },
+        "expiry_date": { "type": "string", "format": "date" },
+        "issuing_country": { "type": "string" }
+      },
+      "required": ["passport_number", "nationality"]
+    }
+  },
+  "properties": {
+    "customer_id": { "type": "string" },
+    "personal_details": { "$ref": "#/$defs/commonIdentity" },
+    "id_documents": {
+      "type": "object",
+      "properties": {
+        "nric": { "$ref": "#/$defs/nric" },
+        "passport": { "$ref": "#/$defs/passport" }
+      },
+      "additionalProperties": false
+    },
+    "demographics": {
+      "type": "object",
+      "properties": {
+        "age": { "type": "integer", "minimum": 0 },
+        "gender": { "type": "string", "enum": ["Male","Female","Other","Prefer not to say"] },
+        "country": { "type": "string" },
+        "city": { "type": "string" }
+      },
+      "required": ["age","gender","country"]
+    },
+    "financials": {
+      "type": "object",
+      "properties": {
+        "employment_type": {
+          "type": "string",
+          "enum": ["Full-time","Part-time","Self-employed","Unemployed","Retired","Student"]
+        },
+        "monthly_income": { "type": "number", "minimum": 0 },
+        "annual_income": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string" }
+      },
+      "required": ["employment_type","annual_income","currency"]
+    }
+  },
+  "required": ["customer_id","personal_details","demographics"],
+  "allOf": [
+    {
+      "if": { "properties": { "demographics": { "properties": { "age": { "minimum": 18 } } } } },
+      "then": { "required": ["financials"] }
+    }
+  ],
+  "additionalProperties": false
+}
