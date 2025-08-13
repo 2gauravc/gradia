@@ -155,8 +155,10 @@ def gen_customer(schema: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[st
         id_documents["passport"] = {
             "passport_number": gen_passport_number(),
             "nationality": personal_details["nationality"],
+            "issue_date": fake.date_between(start_date="-10y", end_date="today").isoformat(),
             "expiry_date": fake.date_between(start_date="+1y", end_date="+10y").isoformat(),
-            "issuing_country": country
+            "issuing_country": country,
+            "place_of_issue": city
         }
 
     if id_documents:
