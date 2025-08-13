@@ -26,9 +26,19 @@ Generate 5 Singapore customers:
 ```bash
 python src/generate_customers.py   --schema schema/customer.schema.json   --constraints config/example_constraints.json   --count 5   --out customers.jsonl   --seed 42
 ```
-
+Generate NRIC HTML documents for these customers:
 ```
 python src/render_nric.py   --input customers.jsonl   --nric-config config/nric_fields.json   --templates-root .   --doc-out docs_out
+```
+
+Generate passport HTML documents for these customers 
+```
+python src/render_passport.py \
+  --input customers.jsonl \
+  --passport-config config/passport_fields.json \
+  --templates-root . \
+  --doc-out docs_out
+```
 
 
 Output is a **JSON Lines** file (`.jsonl`), one customer per line. 
