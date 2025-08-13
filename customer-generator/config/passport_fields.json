@@ -1,0 +1,41 @@
+{
+  "template": "templates/passport.html",
+  "output_pattern": "passport_{customer_id}.html",
+  "fields": [
+    {
+      "key": "name",
+      "source": "/personal_details/name"
+    },
+    {
+      "key": "nationality",
+      "source": "/personal_details/nationality"
+    },
+    {
+      "key": "passport_number",
+      "source": "/id_documents/passport/passport_number"
+    },
+    {
+      "key": "date_of_birth",
+      "source": "/personal_details/date_of_birth",
+      "format": "date:%d %b %Y"
+    },
+    {
+      "key": "gender",
+      "source": "/demographics/gender"
+    },
+    {
+      "key": "issue_date",
+      "source": "/id_documents/passport/issue_date",
+      "format": "date:%d %b %Y"
+    },
+    {
+      "key": "expiry_date",
+      "source": "/id_documents/passport/expiry_date",
+      "format": "date:%d %b %Y"
+    },
+    {
+      "key": "place_of_issue",
+      "source": "/id_documents/passport/place_of_issue"
+    }
+  ]
+}
