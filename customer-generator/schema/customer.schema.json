@@ -27,10 +27,12 @@
       "properties": {
         "passport_number": { "type": "string" },
         "nationality": { "type": "string" },
+        "issue_date": { "type": "string", "format": "date" },
         "expiry_date": { "type": "string", "format": "date" },
-        "issuing_country": { "type": "string" }
+        "issuing_country": { "type": "string" }, 
+        "place_of_issue": { "type": "string" }
       },
-      "required": ["passport_number", "nationality"]
+      "required": ["passport_number", "nationality", "issue_date", "expiry_date", "issuing_country", "place_of_issue"]
     }
   },
   "properties": {
