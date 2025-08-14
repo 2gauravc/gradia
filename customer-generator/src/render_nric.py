@@ -43,10 +43,10 @@ def render_nric_html(customer: Dict[str, Any],
                      schema_path: Path,
                      templates_root: Optional[Path],
                      out_dir: Path) -> Path:
-    cfg = load_json(schema_path)
-    template_rel = cfg["template"]
-    output_pattern = cfg.get("output_pattern", "nric_{customer_id}.html")
-    fields_decl: List[Dict[str, Any]] = cfg["fields"]
+    schema = load_json(schema_path)
+    template_rel = schema["template"]
+    output_pattern = schema.get("output_pattern", "nric_{customer_id}.html")
+    fields_decl: List[Dict[str, Any]] = schema["fields"]
 
     fields: Dict[str, Any] = {}
     for fld in fields_decl:

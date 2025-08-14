@@ -47,10 +47,10 @@ def render_passport_html(customer: Dict[str, Any],
     if not passport:
         # No passport for this customer, skip rendering
         return None
-    cfg = load_json(schema_path)
-    template_rel = cfg["template"]
-    output_pattern = cfg.get("output_pattern", "passport_{customer_id}.html")
-    fields_decl: List[Dict[str, Any]] = cfg["fields"]
+    schema = load_json(schema_path)
+    template_rel = schema["template"]
+    output_pattern = schema.get("output_pattern", "passport_{customer_id}.html")
+    fields_decl: List[Dict[str, Any]] = schema["fields"]
 
     fields: Dict[str, Any] = {}
     for fld in fields_decl:
@@ -70,6 +70,7 @@ def render_passport_html(customer: Dict[str, Any],
     # Choose passport template based on nationality/country
     nationality = fields.get("nationality") or fields.get("country") or customer.get("demographics", {}).get("country")
     passport_country = nationality if nationality in {"SG", "MY", "CN", "IN"} else "SG"
+    print(f"Rendering passport for country: {passport_country}")
     # e.g. templates/passport_SG.html, templates/passport_MY.html, etc.
     passport_template = f"passport_{passport_country}.html"
     try:

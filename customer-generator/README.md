@@ -36,7 +36,7 @@ Generate passport HTML documents for these customers
 python src/render_passport.py \
   --customer_list gen_data_out/customers.jsonl \
   --schema schema/passport_schema.json \
-  --render_templates_root . \
+  --render_templates_root templates/ \
   --out render_docs_out/
 ```
 
