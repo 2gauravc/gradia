@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passport for {{ fields.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; }
+        .passport {
+            width: 400px;
+            margin: 40px auto;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px #aaa;
+        }
+        .passport h2 {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .passport-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .passport-table td {
+            padding: 6px 4px;
+        }
+        .label {
+            font-weight: bold;
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+    <div class="passport">
+        <h2>Passport</h2>
+        <table class="passport-table">
+            <tr>
+                <td class="label">Name</td>
+                <td>{{ fields.name }}</td>
+            </tr>
+            <tr>
+                <td class="label">Nationality</td>
+                <td>{{ fields.nationality }}</td>
+            </tr>
+            <tr>
+                <td class="label">Passport No.</td>
+                <td>{{ fields.passport_number }}</td>
+            </tr>
+            <tr>
+                <td class="label">Date of Birth</td>
+                <td>{{ fields.date_of_birth }}</td>
+            </tr>
+            <tr>
+                <td class="label">Gender</td>
+                <td>{{ fields.gender }}</td>
+            </tr>
+            <tr>
+                <td class="label">Issue Date</td>
+                <td>{{ fields.issue_date }}</td>
+            </tr>
+            <tr>
+                <td class="label">Expiry Date</td>
+                <td>{{ fields.expiry_date }}</td>
+            </tr>
+            <tr>
+                <td class="label">Place of Issue</td>
+                <td>{{ fields.place_of_issue }}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

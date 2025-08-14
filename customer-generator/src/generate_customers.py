@@ -92,14 +92,14 @@ def compute_income(emp_type: str,
 
 # -------- Core generator --------
 
-def gen_customer(schema: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[str, Any]:
-    # Constraints
-    min_age = int(constraints.get("min_age", 0))
-    max_age = int(constraints.get("max_age", 90))
-    fixed_country = constraints.get("country")  # e.g., "SG"
-    fixed_currency = constraints.get("currency")  # e.g., "SGD"
+def gen_customer(schema: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
+    # Config parameters
+    min_age = int(config.get("min_age", 0))
+    max_age = int(config.get("max_age", 90))
+    fixed_country = config.get("country")  # e.g., "SG"
+    fixed_currency = config.get("currency")  # e.g., "SGD"
 
-    # Demographics base from constraints/country
+    # Demographics base from config/country
     if fixed_country == "SG":
         country = "SG"
         city = random.choice(SG_CITIES)
@@ -112,7 +112,7 @@ def gen_customer(schema: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[st
     last_name = fake.last_name()
     full_name = f"{first_name} {last_name}"
 
-    nationality = constraints.get("nationality") or country
+    nationality = config.get("nationality") or country
     address = fake.address().replace("\n", ", ")
 
     dob = random_dob(min_age, max_age)
@@ -166,13 +166,13 @@ def gen_customer(schema: Dict[str, Any], constraints: Dict[str, Any]) -> Dict[st
 
     # Financials for adults only
     if age >= 18:
-        emp_dist = constraints.get("employment_distribution", DEFAULT_EMPLOY_DIST)
+        emp_dist = config.get("employment_distribution", DEFAULT_EMPLOY_DIST)
         total = sum(max(0.0, v) for v in emp_dist.values()) or 1.0
         emp_dist = {k: max(0.0, v) / total for k, v in emp_dist.items()}
 
         emp_type = weighted_choice(emp_dist)
 
-        rngs_cfg_in = constraints.get("monthly_income_ranges", {})
+        rngs_cfg_in = config.get("monthly_income_ranges", {})
         ranges_cfg: Dict[str, Tuple[float, float]] = {}
         for k, default in DEFAULT_MONTHLY_RANGES.items():
             if k in rngs_cfg_in:
@@ -206,8 +206,8 @@ def main():
     ap = argparse.ArgumentParser(description="Generate synthetic customers for the Customer schema.")
     ap.add_argument("--schema", type=Path, required=True, help="Path to customer.schema.json")
     ap.add_argument("--count", type=int, default=10, help="Number of records")
-    ap.add_argument("--constraints", type=Path, help="Path to constraints JSON")
-    ap.add_argument("--out", type=Path, default=Path("customers.jsonl"), help="Output JSONL file")
+    ap.add_argument("--config", type=Path, help="Path to customer config JSON")
+    ap.add_argument("--out", type=Path, default=Path("gen_data_out/customers.jsonl"), help="Output JSONL file")
     ap.add_argument("--seed", type=int, default=None, help="Random seed")
 
     args = ap.parse_args()
@@ -216,12 +216,12 @@ def main():
         random.seed(args.seed)
 
     schema = load_json(args.schema)
-    constraints: Dict[str, Any] = load_json(args.constraints) if args.constraints else {}
+    config: Dict[str, Any] = load_json(args.config) if args.config else {}
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", encoding="utf-8") as f:
         for _ in range(args.count):
-            record = gen_customer(schema, constraints)
+            record = gen_customer(schema, config)
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     print(f"Wrote {args.count} customers to {args.out}")

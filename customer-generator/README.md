@@ -24,20 +24,20 @@ pip install -r requirements.txt
 ## Quickstart
 Generate 5 Singapore customers:
 ```bash
-python src/generate_customers.py   --schema schema/customer.schema.json   --constraints config/example_constraints.json   --count 5   --out customers.jsonl   --seed 42
+python src/generate_customers.py   --schema schema/customer.schema.json   --count 5000 --config config/generate_customer_config.json    --out gen_data_out/customers.jsonl   --seed 42
 ```
 Generate NRIC HTML documents for these customers:
 ```
-python src/render_nric.py   --input customers.jsonl   --nric-config config/nric_fields.json   --templates-root .   --doc-out docs_out
+python src/render_nric.py   --customer_list gen_data_out/customers.jsonl   --schema schema/nric_schema.json   --render_templates_root .   --out render_docs_out/
 ```
 
 Generate passport HTML documents for these customers 
 ```
 python src/render_passport.py \
-  --input customers.jsonl \
-  --passport-config config/passport_fields.json \
-  --templates-root . \
-  --doc-out docs_out
+  --customer_list gen_data_out/customers.jsonl \
+  --schema schema/passport_schema.json \
+  --render_templates_root . \
+  --out render_docs_out/
 ```
 
 

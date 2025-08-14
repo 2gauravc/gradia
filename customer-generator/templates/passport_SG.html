@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Passport for {{ fields.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --blue:#1b4fa3;
+      --ink:#14213d;
+      --label:#444;
+      --paper:#fff;
+      --chip:#e8eefb;
+      --grad1:#f7e4f5;
+      --grad2:#e6f0ff;
+      --grad3:#fde8f0;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:#e9ecf1;
+      padding:24px;
+    }
+
+    /* Card */
+    .doc{
+      max-width:920px;
+      margin:0 auto;
+      background:linear-gradient(160deg,var(--grad2) 0%, var(--grad1) 55%, var(--grad3) 100%);
+      border-radius:14px;
+      box-shadow:0 8px 28px rgba(0,0,0,.18), inset 0 0 0 1px rgba(0,0,0,.06);
+      padding:22px 22px 12px;
+      position:relative;
+      overflow:hidden;
+    }
+    /* subtle guilloché-like pattern */
+    .doc:before{
+      content:"";
+      position:absolute; inset:-40% -20% auto -20%;
+      height:120%;
+      background:
+        radial-gradient(60% 60% at 40% 40%, rgba(255,255,255,.7) 0 60%, transparent 61%) no-repeat,
+        repeating-conic-gradient(from 0deg, rgba(27,79,163,.06) 0 6deg, rgba(27,79,163,0) 6deg 12deg);
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+
+    /* Header */
+    .hdr{
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      border-bottom:2px solid rgba(0,0,0,.08);
+      padding-bottom:10px; margin-bottom:14px;
+    }
+    .hdr .word-passport{
+      color:var(--blue);
+      font-weight:800;
+      letter-spacing:.05em;
+      font-size:22px;
+    }
+    .hdr .country{
+      font-weight:800;
+      color:var(--blue);
+      letter-spacing:.03em;
+      font-size:20px;
+      text-transform:uppercase;
+      margin-left:auto;
+    }
+
+    /* Top section: photo + details */
+    .grid{
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      gap:20px;
+    }
+    @media (max-width:820px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    /* Photo panel */
+    .photoPanel{
+      background:rgba(255,255,255,.65);
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:10px;
+      padding:12px;
+      position:relative;
+      display:flex; align-items:center; justify-content:center;
+      min-height:240px;
+    }
+    .photo{
+      width:86%;
+      aspect-ratio:3/4;
+      border-radius:6px;
+      background:
+        radial-gradient(circle at 38% 38%, rgba(255,255,255,.65) 0 22%, transparent 23%),
+        linear-gradient(160deg,#cfd9ef 0%, #fdfbfb 100%);
+      border:1px solid rgba(0,0,0,.18);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.6), 0 2px 8px rgba(0,0,0,.12);
+      position:relative;
+      overflow:hidden;
+    }
+    /* Optional face silhouette */
+    .photo:after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(180,200,230,.55) 0 18%, transparent 19%),
+        radial-gradient(55% 36% at 50% 52%, rgba(180,200,230,.35) 0 55%, transparent 56%);
+      mix-blend-mode:multiply;
+    }
+    .chip{
+      position:absolute; left:12px; top:12px;
+      width:42px; height:30px; border-radius:4px;
+      background:linear-gradient(120deg,#c7d6ff,#f9fafc);
+      border:1px solid rgba(0,0,0,.15);
+      box-shadow:inset 0 0 0 1px #fff7;
+    }
+
+    /* Details table */
+    .details{
+      background:rgba(255,255,255,.75);
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:10px;
+      padding:14px;
+    }
+    .meta{
+      display:grid; grid-template-columns: 180px 1fr 180px 1fr;
+      gap:8px 14px;
+      font-size:14px;
+      line-height:1.25;
+    }
+    @media (max-width:720px){
+      .meta{ grid-template-columns:160px 1fr; }
+    }
+    .lab{
+      color:var(--label);
+      text-transform:uppercase;
+      font-weight:700;
+      letter-spacing:.03em;
+      font-size:12px;
+    }
+    .val{ color:var(--ink); font-weight:600; }
+
+    /* Watermark */
+    .watermark{
+      position:absolute; right:-40px; top:34%;
+      transform:rotate(-28deg);
+      font-weight:900; font-size:68px; letter-spacing:.04em;
+      color:#ff3b69;
+      opacity:.14;
+      pointer-events:none;
+      user-select:none;
+    }
+
+    /* MRZ (decorative, not computed) */
+    .mrz{
+      margin-top:14px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.22);
+      border-radius:8px;
+      padding:10px 12px;
+      font-family:"OCR A", "OCR-A", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      letter-spacing:.06em;
+      overflow:auto;
+    }
+    .mrz-line{ white-space:nowrap; font-size:14px; }
+    .muted{ color:#000; opacity:.88; }
+    .foot{
+      display:flex; gap:10px; align-items:center; margin-top:10px;
+      color:#3b4a7a; font-size:12px;
+    }
+    .crest{
+      width:20px; height:20px; border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #fff 0 35%, #b9c9ff 36% 100%);
+      border:1px solid rgba(0,0,0,.2);
+      box-shadow:0 1px 4px rgba(0,0,0,.15), inset 0 0 0 1px #ffffff88;
+    }
+
+    /* Top-left small header block (Type / Code / No.) */
+    .smallmeta{
+      display:grid; grid-template-columns: repeat(6,auto);
+      gap:6px 16px;
+      align-items:end;
+      margin:-2px 0 10px;
+      color:#0f2f6d;
+      font-size:12px;
+    }
+    .smallmeta .lab{ font-size:10px; color:#2650a6; opacity:.9 }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <div class="hdr">
+      <div class="word-passport">PASSPORT</div>
+      <div class="crest" aria-hidden="true"></div>
+      <div class="country">REPUBLIC OF SINGAPORE</div>
+    </div>
+
+    <div class="grid">
+      <!-- Left: Photo -->
+      <div class="photoPanel">
+        <div class="chip" title="ePassport chip"></div>
+        <div class="photo" aria-label="Photograph placeholder"></div>
+      </div>
+
+      <!-- Right: Details -->
+      <div class="details">
+        <div class="smallmeta">
+          <div>
+            <div class="lab">Type</div>
+            <div class="val">P</div>
+          </div>
+          <div>
+            <div class="lab">Country Code</div>
+            <div class="val">SGP</div>
+          </div>
+          <div>
+            <div class="lab">Passport No.</div>
+            <div class="val">{{ fields.passport_number }}</div>
+          </div>
+        </div>
+
+        <div class="meta">
+          <div class="lab">Name</div>
+          <div class="val">{{ fields.name }}</div>
+
+          <div class="lab">Nationality</div>
+          <div class="val">{{ fields.nationality }}</div>
+
+          <div class="lab">Date of Birth</div>
+          <div class="val">{{ fields.date_of_birth }}</div>
+
+          <div class="lab">Sex</div>
+          <div class="val">{{ fields.gender }}</div>
+
+          <div class="lab">Place of Issue</div>
+          <div class="val">{{ fields.place_of_issue }}</div>
+
+          <div class="lab">Date of Issue</div>
+          <div class="val">{{ fields.issue_date }}</div>
+
+          <div class="lab">Date of Expiry</div>
+          <div class="val">{{ fields.expiry_date }}</div>
+
+          <div class="lab">Authority</div>
+          <div class="val">Ministry of Home Affairs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative watermark like the sample -->
+    <div class="watermark">SPECIMEN</div>
+
+    <!-- MRZ-style footer (decorative; reuses existing fields without changing them) -->
+    <div class="mrz" aria-label="Machine Readable Zone (decorative)">
+      <div class="mrz-line muted">
+        P&lt;SGP&lt;{{ fields.name|upper|replace(' ', '&lt;') }}<<<<<<<<<<<<<<<<<<<<
+      </div>
+      <div class="mrz-line muted">
+        {{ fields.passport_number }}&lt;SGP<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="crest" aria-hidden="true"></div>
+      <span>This is a styled mockup. Data fields are displayed exactly as provided.</span>
+    </div>
+  </div>
+</body>
+</html>

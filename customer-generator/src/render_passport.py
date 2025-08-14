@@ -40,14 +40,14 @@ def _compute_func(name: str) -> Any:
     raise ValueError(f"Unknown func: {name}")
 
 def render_passport_html(customer: Dict[str, Any],
-                         cfg_path: Path,
-                         templates_root: Optional[Path],
+                         schema_path: Path,
+                         render_templates_root: Optional[Path],
                          out_dir: Path) -> Path:
     passport = customer.get("id_documents", {}).get("passport")
     if not passport:
         # No passport for this customer, skip rendering
         return None
-    cfg = load_json(cfg_path)
+    cfg = load_json(schema_path)
     template_rel = cfg["template"]
     output_pattern = cfg.get("output_pattern", "passport_{customer_id}.html")
     fields_decl: List[Dict[str, Any]] = cfg["fields"]
@@ -74,14 +74,14 @@ def render_passport_html(customer: Dict[str, Any],
     passport_template = f"passport_{passport_country}.html"
     try:
         env = Environment(
-            loader=FileSystemLoader(str(templates_root or ".")),
+            loader=FileSystemLoader(str(render_templates_root or ".")),
             autoescape=select_autoescape(["html", "xml"])
         )
         template = env.get_template(passport_template)
     except Exception:
         # fallback to generic template if specific not found
         env = Environment(
-            loader=FileSystemLoader(str(templates_root or ".")),
+            loader=FileSystemLoader(str(render_templates_root or ".")),
             autoescape=select_autoescape(["html", "xml"])
         )
         template = env.get_template(template_rel)
@@ -95,22 +95,22 @@ def render_passport_html(customer: Dict[str, Any],
 
 def main():
     ap = argparse.ArgumentParser(description="Render Passport HTML for customers from JSONL.")
-    ap.add_argument("--input", type=Path, required=True, help="Input JSONL file with customers")
-    ap.add_argument("--passport-config", type=Path, required=True, help="Path to passport field-declaration JSON")
-    ap.add_argument("--templates-root", type=Path, default=Path("."), help="Root folder for HTML templates")
-    ap.add_argument("--doc-out", type=Path, default=Path("docs_out"), help="Output folder for rendered documents")
+    ap.add_argument("--customer_list", type=Path, required=True, help="Input JSONL file with customers")
+    ap.add_argument("--schema", type=Path, required=True, help="Path to passport field-declaration JSON")
+    ap.add_argument("--render_templates_root", type=Path, default=Path("."), help="Root folder for HTML templates")
+    ap.add_argument("--out", type=Path, default=Path("render_docs_out/"), help="Output folder for rendered documents")
 
     args = ap.parse_args()
 
-    with args.input.open("r", encoding="utf-8") as f:
+    with args.customer_list.open("r", encoding="utf-8") as f:
         for line in f:
             customer = json.loads(line)
             try:
                 out_path = render_passport_html(
                     customer=customer,
-                    cfg_path=args.passport_config,
-                    templates_root=args.templates_root,
-                    out_dir=args.doc_out,
+                    schema_path=args.schema,
+                    render_templates_root=args.render_templates_root,
+                    out_dir=args.out,
                 )
             except Exception as e:
                 print(f"[warn] Failed to render passport for {customer.get('customer_id', '?')}: {e}")
@@ -119,7 +119,7 @@ def main():
             if (out_path is None): 
                 print(f"No passport details for customer {customer.get('customer_id', '?')}, skipping.")
             else:
-                print(f"Rendered passport for customer {customer.get('customer_id', '?')}. HTML documents to {args.doc_out}")
+                print(f"Rendered passport for customer {customer.get('customer_id', '?')}. HTML documents to {args.out}")
 
 if __name__ == "__main__":
     main()

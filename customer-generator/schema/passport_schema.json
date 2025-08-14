@@ -1,5 +1,5 @@
 {
-  "template": "templates/passport.html",
+  "template": "templates/passport_SG.html",
   "output_pattern": "passport_{customer_id}.html",
   "fields": [
     {
